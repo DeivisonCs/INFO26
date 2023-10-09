@@ -130,7 +130,7 @@ int sort_string(Stack *p, int range){
 void sort_stack(Stack *p, Stack *aux){
     FILE *arq_out; arq_out = fopen("L1Q2.out", "a");
     int i, trocas;
-    char *sup;
+    char sup[MAX_CHAR];
     
     remove_fgets(aux);
 
