@@ -1,3 +1,6 @@
+/*
+    gcc RL1Q1.c -o q1
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,7 +17,7 @@ typedef struct nums{
 }Start;
 
 int get_number(Start *p, int index, char *token);
-void transfer_files(Start *p, int index);
+void transfer_files(Start *p, int index, int lineOut);
 void sum(Start *p, int index, int qtd);
 void int_sort(Start *p, int index);
 void sum_sort(Start *p, int index);
@@ -23,8 +26,8 @@ int main(){
     FILE *arq_in; arq_in = fopen("L1Q1.in", "r");
     FILE *arq_out; arq_out = fopen("L1Q1.out", "w");
     Start line_out[MAX_NUM]; int qtd;
+    int ctrl, linhas=0;
     char *token;
-    int ctrl;
 
     if(arq_in == NULL){
         fprintf(arq_out, "Arquivo de Entrada Nao Encontrado!\n");
@@ -49,21 +52,17 @@ int main(){
             }
 
             if(strcmp(token, "start") == 0){
-                ////printf("soma: %d\n", line_out[qtd].soma);
                 qtd++;
                 line_out[qtd].qtd = 0;
                 line_out[qtd].soma = 0;
-               //printf("token: %s\n", token);
             }
 
             token = strtok(NULL, Separador);
         }
         int_sort(line_out, qtd+1);
         sum_sort(line_out, qtd+1);
-        transfer_files(line_out, qtd+1);
-        // printf("soma: %d\n\n", line_out[qtd].soma);
-        // printf("index: %d\n\n", qtd);
-        // printf("out\n");
+        transfer_files(line_out, qtd+1, linhas);
+        linhas++;
     }while(!feof(arq_in));
 
     free(line);
@@ -116,7 +115,6 @@ void sum_sort(Start *p, int index){
     int i, j, menor;
     Start aux;
 
-    //printf("index: %d\n", index);
     for(i=0; i<index; i++)
     {
         menor =  i;
@@ -134,21 +132,27 @@ void sum_sort(Start *p, int index){
     }
 }
 
-void transfer_files(Start *p, int index){
+void transfer_files(Start *p, int index, int lineOut){
     FILE *arq_out; arq_out = fopen("L1Q1.out", "a");
     int i, j;
 
-    //printf("index: %d\n", index);
+    if(lineOut != 0)
+        fprintf(arq_out, "\n");
+
     for(i=0; i<index; i++)
     {
-        fprintf(arq_out, "%s ", "start");
+        if(i==0)
+            fprintf(arq_out, "%s ", "start");
+        else
+            fprintf(arq_out, " %s ", "start");
 
         for(j=0; j<p[i].qtd; j++){
-            //printf("num: %d\n", p[i].num[j]);
-            fprintf(arq_out, "%d ", p[i].num[j]);
+            fprintf(arq_out, "%d", p[i].num[j]);
+
+            if(j+1 != p[i].qtd)
+                fprintf(arq_out, " ");
         }
     }
-    fprintf(arq_out, "\n");
 
     fclose(arq_out);
 }
