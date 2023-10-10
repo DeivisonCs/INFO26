@@ -15,7 +15,7 @@ typedef struct stack{
     int qtd;
 }Stack;
 
-void sort_stack(Stack *p, Stack *aux);
+void sort_stack(Stack *p, Stack *aux, int lineQtd);
 int sort_string(Stack *p, int range);
 void push(Stack *p, char *token);
 void pop(Stack *p, Stack *aux);
@@ -25,9 +25,9 @@ void print_stack(Stack p);
 int main(){
     FILE *arq_in; arq_in = fopen("L1Q2.in", "r");
     FILE *arq_out; arq_out = fopen("L1Q2.out", "w");
-    Stack stack;
-    Stack aux;
+    Stack stack, aux;
     char *token;
+    int lineQtd=0;
 
     if(arq_in == NULL){
         fprintf(arq_out, "Arquivo de Entrada Não Encontrado!");
@@ -47,7 +47,8 @@ int main(){
             token = strtok(NULL, Separador);
         }
 
-        sort_stack(&stack, &aux);
+        sort_stack(&stack, &aux, lineQtd);
+        lineQtd++;
 
     }while(!feof(arq_in));
 
@@ -127,12 +128,15 @@ int sort_string(Stack *p, int range){
     return qtd_trocas;
 }
 
-void sort_stack(Stack *p, Stack *aux){
+void sort_stack(Stack *p, Stack *aux, int lineQtd){
     FILE *arq_out; arq_out = fopen("L1Q2.out", "a");
     int i, trocas;
     char sup[MAX_CHAR];
     
     remove_fgets(aux);
+
+    if(lineQtd != 0)
+        fprintf(arq_out, "\n");
 
     for(i=0; i<aux->qtd; i++)
     {
@@ -144,17 +148,20 @@ void sort_stack(Stack *p, Stack *aux){
         {
             fprintf(arq_out, "%dx-pop ", trocas);
 
-            for(int j=i-trocas; j<=i; j++)
-                fprintf(arq_out, "push-%s ", p->name[j]);
+            for(int j=i-trocas; j<=i; j++){
+                fprintf(arq_out, "push-%s", p->name[j]);
+                    if(j != i)
+                        fprintf(arq_out, " ");
+            }
         }
-        else if(i+1==aux->qtd)
-            fprintf(arq_out, "push-%s", p->name[i]);
         else
-            fprintf(arq_out, "push-%s ", p->name[i]);
+            fprintf(arq_out, "push-%s", p->name[i]);
+
+        if(i+1!=aux->qtd)
+            fprintf(arq_out, " ");
 
     }
-    fprintf(arq_out, "\n");
-
+ 
     fclose(arq_out);
 }
 
