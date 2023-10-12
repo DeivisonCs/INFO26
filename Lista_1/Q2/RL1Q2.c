@@ -55,6 +55,8 @@ int main(){
     free(line);
     fclose(arq_in);
     fclose(arq_out);
+
+    return EXIT_SUCCESS;
 }
 
 void push(Stack *p, char *token){

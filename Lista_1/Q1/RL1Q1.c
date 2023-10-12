@@ -68,6 +68,8 @@ int main(){
     free(line);
     fclose(arq_in);
     fclose(arq_out);
+
+    return EXIT_SUCCESS;
 }
 
 int get_number(Start *p, int index, char *token){
