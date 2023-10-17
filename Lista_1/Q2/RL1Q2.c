@@ -16,11 +16,11 @@ typedef struct stack{
 }Stack;
 
 void sort_stack(Stack *p, Stack *aux, int lineQtd);
-int sort_string(Stack *p, int range);
+int sort_string(Stack *p, int range, char newElement[]);
 void push(Stack *p, char *token);
 void pop(Stack *p, Stack *aux);
 void remove_fgets(Stack *p);
-void print_stack(Stack p);
+void print_stack(Stack *p);
 
 int main(){
     FILE *arq_in; arq_in = fopen("L1Q2.in", "r");
@@ -55,8 +55,6 @@ int main(){
     free(line);
     fclose(arq_in);
     fclose(arq_out);
-
-    return EXIT_SUCCESS;
 }
 
 void push(Stack *p, char *token){
@@ -74,11 +72,6 @@ void push(Stack *p, char *token){
 }
 
 void pop(Stack *p, Stack *aux){
-
-    if(p->qtd == 0){
-        printf("Stack Underflow");
-        return;
-    }
     
     strcpy(aux->name[aux->qtd] , p->name[p->qtd-1]);
     // printf("aux: %s\n", aux->name[aux->qtd]);
@@ -88,7 +81,7 @@ void pop(Stack *p, Stack *aux){
 
 }
 
-int sort_string(Stack *p, int range){
+int sort_string(Stack *p, int range, char newElement[]){
     int i, j, x;
     char sup[MAX_CHAR];
     int qtd_trocas=0;
@@ -96,7 +89,7 @@ int sort_string(Stack *p, int range){
 
     for(i=range-1, x=0; i>=0; i--)
     {
-        if(p->name[range][x] < p->name[i][x])
+        if(newElement[x] < p->name[i][x])
         {
             qtd_trocas++;
             x=0;
@@ -104,28 +97,27 @@ int sort_string(Stack *p, int range){
             // strcpy(p->name[range], p->name[i-1]);
             // strcpy(p->name[i-1], sup);
         }
-        else if(p->name[range][x] == p->name[i][x])
-            if(p->name[range][x] != '\0' || p->name[i][x] != '\0'){
+        else if(newElement[x] == p->name[i][x])
+            if(newElement[x] != '\0' || p->name[i][x] != '\0'){
                 i++;
                 x++;
             }
     }
 
     if(qtd_trocas!=0){
-        for(i=0; i<=qtd_trocas; i++)
+        for(i=0; i<qtd_trocas; i++)
             pop(p, &aux);
 
-        strcpy(sup, aux.name[0]);
-        push(p, sup);
-
+        //strcpy(sup, aux.name[0]);
+        push(p, newElement);
         // print_stack(aux);
         // print_stack(*p);
 
-        for(i=aux.qtd-1; i>0; i--){
+        for(i=aux.qtd-1; i>=0; i--){
             strcpy(sup, aux.name[i]);
             push(p, sup);
         }
-    }
+    }else push(p, newElement);
 
     return qtd_trocas;
 }
@@ -143,9 +135,7 @@ void sort_stack(Stack *p, Stack *aux, int lineQtd){
     for(i=0; i<aux->qtd; i++)
     {
         strcpy(sup, aux->name[i]);
-        push(p, sup);
-        trocas = sort_string(p, i);
-        // printf("%s\n", p->name[i]);
+        trocas = sort_string(p, i, sup);
         if(trocas != 0)
         {
             fprintf(arq_out, "%dx-pop ", trocas);
@@ -176,8 +166,9 @@ void remove_fgets(Stack *p){
         p->name[p->qtd-1][i] = '\0';
 }
 
-void print_stack(Stack p){
-    printf("Qtd:%d\n", p.qtd);
-    for(int i=p.qtd-1; i>=0; i--)
-        printf("%s\n", p.name[i]);
+void print_stack(Stack *p){
+    printf("Qtd:%d\n", p->qtd);
+    for(int i=p->qtd-1; i>=0; i--)
+        printf("%s\n", p->name[i]);
+    printf("\n");
 }
