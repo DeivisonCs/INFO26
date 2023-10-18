@@ -35,11 +35,11 @@ typedef struct s_head{
 //     int qtd_S_num;
 // }Nums;
 
-void init(p_Head *p, s_Head *x);
+void init(p_Head *p);
 void print_sub_list(p_Node *p_node);
-void print_list(p_Head *Head, s_Head *s_head);
+void print_list(p_Head *Head);
 void insert_main_list(p_Head *H, p_Node *list);
-void insert_sub_list(s_Head *s_H, s_Node *s_node, p_Head *p_H);
+void insert_sub_list(s_Node *s_node, p_Head *p_H);
 
 int main(){
     FILE *arq_in; arq_in = fopen("L1Q3.in", "r");
@@ -55,9 +55,8 @@ int main(){
 
     p_Head *main_Head = malloc(sizeof(p_Head));
     p_Node *main_Node;
-    s_Head *sub_Head = malloc(sizeof(s_Head));
     s_Node *sub_Node;
-    init(main_Head, sub_Head);
+    init(main_Head);
 
     char *line = malloc(MAX_LINE * sizeof(char));
 
@@ -81,21 +80,16 @@ int main(){
             if(ctrl==0){
                 main_Node = malloc(sizeof(p_Node));
                 main_Node->key = atoi(token);
-                // printf("Here 1\n");
                 insert_main_list(main_Head, main_Node);
-                // printf("Here 2\n");
             }
             else if(ctrl==1){
                 sub_Node = malloc(sizeof(s_Node));
                 sub_Node->key = atof(token);
-                // printf("Here 3\n");
-                insert_sub_list(sub_Head, sub_Node, main_Head);
-                // printf("Here 4\n");
+                insert_sub_list(sub_Node, main_Head);
             }
 
             token = strtok(NULL, " ");
         }
-        // print_list(main_Head, sub_Head);
 
     }while(!feof(arq_in));
 
@@ -106,10 +100,8 @@ int main(){
     return EXIT_SUCCESS;
 }
 
-void init(p_Head *p, s_Head *x){
+void init(p_Head *p){
     p->head=NULL;
-    x->head=NULL;
-    // x->sub=NULL;
 }
 
 void insert_main_list(p_Head *H, p_Node *list){
@@ -131,7 +123,7 @@ void insert_main_list(p_Head *H, p_Node *list){
     list->sub = NULL;
 }
 
-void insert_sub_list(s_Head *s_H, s_Node *s_node, p_Head *p_H){
+void insert_sub_list(s_Node *s_node, p_Head *p_H){
 
     p_Node *main_list = p_H->head;
     while(main_list != NULL)
@@ -143,56 +135,39 @@ void insert_sub_list(s_Head *s_H, s_Node *s_node, p_Head *p_H){
 
             if(main_list->sub == NULL){
                 printf("New\n");
-                s_H->head = s_node;
-                s_node->next = s_H->head;
-                main_list->sub = s_H->head;
+                main_list->sub = s_node;
+                main_list->sub->next = main_list->sub;
+            }
+            else if(s_node->key <= main_list->sub->key){
+                s_node->next = main_list->sub;
+
+                s_Node *x = main_list->sub;
+                while(x->next != main_list->sub)
+                    x = x->next;
+
+                x->next = s_node;    
+                main_list->sub = s_node;
             }
             else{
                 printf("Not New\n");
-                s_Node *prev = s_H->head;
-                s_Node *new_Node = s_node;
-            
-                while(prev->next != s_H->head && prev->next->key < s_node->key){
-                    prev = prev->next;
-                    // if(prev == s_H->head) break;
-                }
-                
-                // if(prev == s_H->head){
-                //     printf("here\n");
-                //     s_node->next = s_H->head;
-                //     s_H->head = s_node;
-                //     printf("head: %.2f\n", s_node->key);
-                //     printf("s_node: %.2f\n", s_node->key);
-                // }
-                // else{
-                    new_Node->next = prev->next;
-                    prev->next = new_Node;
+                s_Node *prev = main_list->sub;
 
-                    if (prev == s_H->head) {
-                        s_H->head = new_Node;
-                    }
-                // }            
+                while(prev->next != main_list->sub && prev->next->key < s_node->key)
+                    prev = prev->next;
+                
+                s_node->next = prev->next;
+                prev->next = s_node;
+    
             }
 
-            // s_Node *prev = main_list->sub;
-            // while (prev->next != main_list->sub && prev->key < s_node->key) {
-            //     prev = prev->next;
-            // }
-            // s_node->next = prev->next;
-            // prev->next = s_node;
-
-            // if (prev == main_list->sub) 
-            //     main_list->sub = s_node;
-            
-            main_list->sub = s_H->head;
-            print_list(p_H, s_H);
+            print_list(p_H);
             return;
         }
         main_list = main_list->next;
     }    
 }
 
-void print_list(p_Head *Head, s_Head *s_head){
+void print_list(p_Head *Head){
     int ctrl;
 
     p_Node *x = Head->head;
