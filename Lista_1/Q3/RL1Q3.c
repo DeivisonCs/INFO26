@@ -28,6 +28,7 @@ void init(p_Head *p);
 void clear_list(p_Head *p_H);
 void print_sub_test(p_Head *p_H);
 void print_main_test(p_Head *p_H);
+int verify_range(float main, float var);
 void print_list(p_Head *Head, int lineQtd);
 void insert_main_list(p_Head *H, p_Node *list);
 void insert_sub_list(s_Node *s_node, p_Head *p_H);
@@ -135,18 +136,17 @@ void insert_main_list(p_Head *H, p_Node *list){
     }
 
     list->sub = NULL;
-    // printf("num:%d\n", list->key);
 }
 
 void insert_sub_list(s_Node *s_node, p_Head *p_H){
 
     p_Node *main_list = p_H->head;
 
-    // printf("new-sub: %.2f\n", s_node->key);
     while(main_list != NULL)
     {
-        if(s_node->key >= main_list->key-0.99 && s_node->key <= main_list->key+0.99){
-
+         
+        if(verify_range(main_list->key, s_node->key))
+        {
             if(main_list->sub == NULL)  //Caso seja o primeiro elemento
             {
                 main_list->sub = s_node;
@@ -287,4 +287,18 @@ void print_sub_test(p_Head *p_H){
         p_node = p_node->next;
     }
     printf("-------------------------------\n");
+}
+
+int verify_range(float main, float var){
+    int x=0;
+
+    // printf("Valor: %f ", var);
+    // printf("Range: %f ", main - 0.99);
+    // printf("Range: %f\n", main + 0.99);
+    if(var <= (main + 0.99) && var >= main)
+        x = 1;
+    // else if(var >= (main - 0.99) && var <= main)
+    //     x = 1;
+
+    return x;
 }
