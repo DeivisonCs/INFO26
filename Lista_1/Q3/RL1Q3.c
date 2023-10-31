@@ -14,7 +14,7 @@ typedef struct s_Node{
 }s_Node;
 
 typedef struct p_Node{
-    int key;
+    float key;
     struct p_Node *prev;
     struct p_Node *next;
     s_Node *sub;
@@ -27,6 +27,7 @@ typedef struct p_Head{
 void init(p_Head *p);
 void clear_list(p_Head *p_H);
 void print_sub_test(p_Head *p_H);
+void print_main_test(p_Head *p_H);
 void print_list(p_Head *Head, int lineQtd);
 void insert_main_list(p_Head *H, p_Node *list);
 void insert_sub_list(s_Node *s_node, p_Head *p_H);
@@ -68,7 +69,7 @@ int main(){
 
             if(ctrl==0){
                 main_Node = malloc(sizeof(p_Node));
-                main_Node->key = atoi(token);
+                main_Node->key = atof(token);
                 insert_main_list(main_Head, main_Node);
             }
             else if(ctrl==1){
@@ -80,6 +81,8 @@ int main(){
             token = strtok(NULL, " ");
         }
         print_list(main_Head, lineQtd);
+        // print_main_test(main_Head);
+        // print_sub_test(main_Head);
         clear_list(main_Head);
         lineQtd++;
 
@@ -102,23 +105,33 @@ void insert_main_list(p_Head *H, p_Node *list){
 
     p_Node *x = H->head;
 
-    if(x == H->head){    //Caso seja no primeiro elemento da lista
-        list->next = H->head;
+    if(x == NULL){
+        list->next = NULL;
         list->prev = NULL;
         H->head = list;
     }
-    else if(x->next == NULL && x->key >= list->key){    //Caso seja menor que o primeiro elemento da lista  
-        list->next = H->head;
+    else if(list->key <= x->key){    //Inserir no lugar do primeiro
+        list->next = x;
         list->prev = NULL;
+        x->prev = list;
         H->head = list;
     }
-    else{   //Caso esteja no meio ou final da lista
+    else{   //Inserir no meio ou fim da lista
 
-        while(x != NULL && x->key < list->key)
+        while(x->next != NULL && x->key <= list->key)
             x = x->next;
 
-        list->next = x;
-        list->prev = x->prev;
+        if(x->key >= list->key){    //Caso não seja final da lista
+            x->prev->next = list;
+            list->prev = x->prev;
+            list->next = x;
+            x->prev = list;
+        }
+        else{
+            list->next = NULL;
+            list->prev = x;
+            x->next = list;
+        }
     }
 
     list->sub = NULL;
@@ -128,18 +141,16 @@ void insert_main_list(p_Head *H, p_Node *list){
 void insert_sub_list(s_Node *s_node, p_Head *p_H){
 
     p_Node *main_list = p_H->head;
+
+    // printf("new-sub: %.2f\n", s_node->key);
     while(main_list != NULL)
     {
-        if(s_node->key > main_list->key-1 && s_node->key < main_list->key+1){
-            // printf("main: %d  ", main_list->key);
-            // printf("sub: %.2f\n", s_node->key);
-            // printf("Found\n");
+        if(s_node->key >= main_list->key-0.99 && s_node->key <= main_list->key+0.99){
 
             if(main_list->sub == NULL)  //Caso seja o primeiro elemento
             {
-                // printf("New\n");
                 main_list->sub = s_node;
-                main_list->sub->next = main_list->sub;
+                s_node->next = main_list->sub;
             }
             else if(s_node->key <= main_list->sub->key)    //Caso seja menor que o primeiro elemento da lista
             {
@@ -154,7 +165,6 @@ void insert_sub_list(s_Node *s_node, p_Head *p_H){
             }
             else    //Caso seja adicionado no meio ou final da lista
             {
-                // printf("Not New\n");
                 s_Node *prev = main_list->sub;
 
                 while(prev->next != main_list->sub && prev->next->key < s_node->key)
@@ -165,7 +175,6 @@ void insert_sub_list(s_Node *s_node, p_Head *p_H){
     
             }
 
-            // print_list(p_H);
             return;
         }
         main_list = main_list->next;
@@ -182,7 +191,7 @@ void print_list(p_Head *Head, int lineQtd){
     fprintf(arq_out, "[");
     while(x != NULL)
     {
-        fprintf(arq_out, "%d", x->key);
+        fprintf(arq_out, "%g", x->key);
 
         if(x->sub != NULL)
         {
@@ -217,7 +226,6 @@ void clear_list(p_Head *p_H){
 
     while(p_node != NULL)
     {
-
         if(p_node->sub != NULL)
         {
             s_next = p_node->sub;
@@ -242,23 +250,41 @@ void clear_list(p_Head *p_H){
     p_H->head = NULL;
 }
 
+void print_main_test(p_Head *p_H){
+    int ctrl;
+    p_Node *p_node = p_H->head;
+
+    printf("\n\tPrint Main-Lista:\n");
+    while(p_node != NULL)
+    {   
+        printf("%g\n", p_node->key);
+        p_node = p_node->next;
+    }
+}
+
 void print_sub_test(p_Head *p_H){
     int ctrl;
     p_Node *p_node = p_H->head;
     s_Node *node;
 
+    printf("\n\tPrint Sub-Lista:\n");
     while(p_node != NULL)
     {   
         ctrl=0;
-        node = p_node->sub;
-        do{
-            printf("%.2f\n", node->key);
-            node = node->next;
-            ctrl++;
-            if(ctrl == 5)
-                break;
-        }while(node != p_H->head->sub);
+        printf("main: %g\n", p_node->key);
+
+        if(p_node->sub != NULL){
+            node = p_node->sub;
+            do{
+                printf("%.2f\n", node->key);
+                node = node->next;
+                // ctrl++;
+                // if(ctrl == 5)
+                //     break;
+            }while(node != p_node->sub);
+        }
 
         p_node = p_node->next;
     }
+    printf("-------------------------------\n");
 }
