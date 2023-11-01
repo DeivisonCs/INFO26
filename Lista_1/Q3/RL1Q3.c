@@ -14,7 +14,7 @@ typedef struct s_Node{
 }s_Node;
 
 typedef struct p_Node{
-    float key;
+    int key;
     struct p_Node *prev;
     struct p_Node *next;
     s_Node *sub;
@@ -28,7 +28,7 @@ void init(p_Head *p);
 void clear_list(p_Head *p_H);
 void print_sub_test(p_Head *p_H);
 void print_main_test(p_Head *p_H);
-int verify_range(float main, float var);
+int verify_range(int main, float var);
 void print_list(p_Head *Head, int lineQtd);
 void insert_main_list(p_Head *H, p_Node *list);
 void insert_sub_list(s_Node *s_node, p_Head *p_H);
@@ -70,7 +70,7 @@ int main(){
 
             if(ctrl==0){
                 main_Node = malloc(sizeof(p_Node));
-                main_Node->key = atof(token);
+                main_Node->key = atoi(token);
                 insert_main_list(main_Head, main_Node);
             }
             else if(ctrl==1){
@@ -191,7 +191,7 @@ void print_list(p_Head *Head, int lineQtd){
     fprintf(arq_out, "[");
     while(x != NULL)
     {
-        fprintf(arq_out, "%g", x->key);
+        fprintf(arq_out, "%d", x->key);
 
         if(x->sub != NULL)
         {
@@ -257,7 +257,7 @@ void print_main_test(p_Head *p_H){
     printf("\n\tPrint Main-Lista:\n");
     while(p_node != NULL)
     {   
-        printf("%g\n", p_node->key);
+        printf("%d\n", p_node->key);
         p_node = p_node->next;
     }
 }
@@ -271,7 +271,7 @@ void print_sub_test(p_Head *p_H){
     while(p_node != NULL)
     {   
         ctrl=0;
-        printf("main: %g\n", p_node->key);
+        printf("main: %d\n", p_node->key);
 
         if(p_node->sub != NULL){
             node = p_node->sub;
@@ -289,13 +289,13 @@ void print_sub_test(p_Head *p_H){
     printf("-------------------------------\n");
 }
 
-int verify_range(float main, float var){
+int verify_range(int main, float var){
     int x=0;
 
     // printf("Valor: %f ", var);
     // printf("Range: %f ", main - 0.99);
     // printf("Range: %f\n", main + 0.99);
-    if(var <= (main + 0.99) && var >= main)
+    if(var <= ((float)main + 0.99) && var >= (float)main)
         x = 1;
     // else if(var >= (main - 0.99) && var <= main)
     //     x = 1;
