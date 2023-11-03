@@ -11,7 +11,7 @@
 const char *Separador = " ";
 
 typedef struct stack{
-    char name[MAX][MAX_CHAR];  //name[posição][quantidade_letras]
+    char name[MAX][MAX_CHAR];  //name[posição/nome][quantidade_letras]
     int qtd;
 }Stack;
 
@@ -89,13 +89,12 @@ int sort_string(Stack *p, int range, char newElement[]){
 
     for(i=range-1, x=0; i>=0; i--)
     {
-        if(newElement[x] < p->name[i][x])
-        {
+        if(strcmp(newElement, p->name[i]) == 0)
+            break;
+            
+        if(newElement[x] < p->name[i][x]){
             qtd_trocas++;
             x=0;
-            // strcpy(sup, p->name[range]);
-            // strcpy(p->name[range], p->name[i-1]);
-            // strcpy(p->name[i-1], sup);
         }
         else if(newElement[x] == p->name[i][x])
             if(newElement[x] != '\0' || p->name[i][x] != '\0'){
@@ -108,10 +107,7 @@ int sort_string(Stack *p, int range, char newElement[]){
         for(i=0; i<qtd_trocas; i++)
             pop(p, &aux);
 
-        //strcpy(sup, aux.name[0]);
         push(p, newElement);
-        // print_stack(aux);
-        // print_stack(*p);
 
         for(i=aux.qtd-1; i>=0; i--){
             strcpy(sup, aux.name[i]);
