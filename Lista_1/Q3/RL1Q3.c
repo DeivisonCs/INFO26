@@ -3,6 +3,7 @@
 */
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <string.h>
 
 #define MAX_LINE 600
@@ -28,7 +29,7 @@ void init(p_Head *p);
 void clear_list(p_Head *p_H);
 void print_sub_test(p_Head *p_H);
 void print_main_test(p_Head *p_H);
-int verify_range(int main, float var);
+int verify_range(int main, float sub);
 void print_list(p_Head *Head, int lineQtd);
 void insert_main_list(p_Head *H, p_Node *list);
 void insert_sub_list(s_Node *s_node, p_Head *p_H);
@@ -193,11 +194,12 @@ void print_list(p_Head *Head, int lineQtd){
     {
         fprintf(arq_out, "%d", x->key);
 
+        fprintf(arq_out, "(");
+
         if(x->sub != NULL)
         {
             s_Node *y = x->sub;
 
-            fprintf(arq_out, "(");
             do{ 
                 fprintf(arq_out, "%g", y->key);
 
@@ -206,8 +208,9 @@ void print_list(p_Head *Head, int lineQtd){
 
                 y = y->next;
             }while(y != x->sub);
-            fprintf(arq_out, ")");
         }
+
+        fprintf(arq_out, ")");
         
         if(x->next != NULL)
             fprintf(arq_out, "->");
@@ -289,16 +292,7 @@ void print_sub_test(p_Head *p_H){
     printf("-------------------------------\n");
 }
 
-int verify_range(int main, float var){
-    int x=0;
-
-    // printf("Valor: %f ", var);
-    // printf("Range: %f ", main - 0.99);
-    // printf("Range: %f\n", main + 0.99);
-    if(var <= ((float)main + 0.99) && var >= (float)main)
-        x = 1;
-    // else if(var >= (main - 0.99) && var <= main)
-    //     x = 1;
-
-    return x;
+int verify_range(int main, float sub){
+    
+    if((main >= 0 && sub <= 0) || (main <= 0 &&))
 }
