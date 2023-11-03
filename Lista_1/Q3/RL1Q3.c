@@ -293,6 +293,7 @@ void print_sub_test(p_Head *p_H){
 }
 
 int verify_range(int main, float sub){
-    
-    if((main >= 0 && sub <= 0) || (main <= 0 &&))
+    if((float)(main - 0.99) <= sub && sub <= (float)main) return 1;
+    else if((float)(main + 0.99) >= sub && sub >= (float)main) return 1;
+    else return 0;
 }
