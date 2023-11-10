@@ -8,6 +8,15 @@
 #define MAX_LINE 600
 #define separador " "
 
+typedef struct alt_list {
+    int key;
+    struct alt_list *next;
+}alt_List;
+
+typedef struct head_list {
+    alt_List *list;
+}head_Alt;
+
 typedef struct node {
     struct node *father;
     struct node *right;
@@ -19,12 +28,16 @@ typedef struct Root {
     Node *root;
 }Root;
 
-void init(Root *root);
 void clear_tree(Node *root);
 Node* create_node(int value);
-void output_height(int height);
 void show_in_order(Node *root);
-void insert_tree(Root *root, Node *node);
+void clear_alt_list(head_Alt *alt);
+void get_height(int height, alt_List *head);
+Node* get_max_plus_alt(Node *root, int *alt);
+void init(Root *root, head_Alt *height_list);
+void add_height_list(head_Alt *head, int alt);
+int insert_tree_get_height(Root *root, Node *node);
+void transfer_2_file(Root *root, int qtd_line, head_Alt *alt);
 
 int main(){
     FILE *arq_in; arq_in = fopen("L2Q1.in", "r");
@@ -38,22 +51,29 @@ int main(){
     }
     
     Root *root = malloc(sizeof(Root));
-    char *token;
+    head_Alt *height_list = malloc(sizeof(head_Alt));
+
     char *line = malloc(MAX_LINE * sizeof(char)); 
+    char *token;
+    int qtd_line = 0, alt;
 
     do{
         fgets(line, MAX_LINE, arq_in);
         token = strtok(line, separador);
 
-        init(root);
+        init(root, height_list);
         while(token != NULL)
         {   
-            insert_tree(root, create_node(atoi(token)));
+            alt = insert_tree_get_height(root, create_node(atoi(token)));
+            add_height_list(height_list, alt);
             token = strtok(NULL, separador);
         }
-        show_in_order(root->root);
-        printf("\n");
+        transfer_2_file(root, qtd_line, height_list);
+        qtd_line++;
+
+        // show_in_order(root->root);
         clear_tree(root->root);
+        clear_alt_list(height_list);
 
     }while(!feof(arq_in));
 
@@ -63,8 +83,9 @@ int main(){
     return EXIT_SUCCESS;
 }
 
-void init(Root *root) {
+void init(Root *root, head_Alt *height_list) {
     root->root = NULL;
+    height_list->list = NULL;
 } 
 
 Node* create_node(int value) {
@@ -76,7 +97,7 @@ Node* create_node(int value) {
     return node;
 }
 
-void insert_tree(Root *root, Node *node) {
+int insert_tree_get_height(Root *root, Node *node) {
     Node *x = NULL;
     Node *y = root->root;
     int height = 0;
@@ -89,13 +110,30 @@ void insert_tree(Root *root, Node *node) {
 
         height++;
     }
-    output_height(height);
 
     node->father = x;
 
-    if(x == NULL) root->root = node;
+    if(x == NULL)  root->root = node;
     else if(node->key < x->key) x->left = node;  
     else x->right = node;
+
+    return height;
+}
+
+void add_height_list(head_Alt *head, int alt){
+    alt_List *new_node = malloc(sizeof(new_node));
+    new_node->key = alt;
+    new_node->next = NULL;
+
+    alt_List *aux = head->list;
+
+    if(aux == NULL) head->list = new_node;
+    else{
+        while(aux->next != NULL)
+            aux = aux->next;
+
+        aux->next = new_node;
+    }
 }
 
 void show_in_order(Node *root) {
@@ -107,6 +145,61 @@ void show_in_order(Node *root) {
     }
 }
 
+void get_height(int height, alt_List *head) {
+    alt_List *alt = malloc(sizeof(alt_List));
+    alt->key = height;
+    alt->next = NULL;
+
+    alt_List *aux = head;
+
+    if(aux == NULL) aux = alt;
+
+    else while(aux->next != NULL)
+            aux = aux->next;
+
+    aux->next = alt;    
+}
+
+Node* get_max_plus_alt(Node *root, int *alt) {
+
+    if(root != NULL)
+        while(root->right != NULL){
+            root = root->right;
+            (*alt)++;
+        }
+
+    return root;
+}
+
+void transfer_2_file(Root *root, int qtd_line, head_Alt *alt) {
+    FILE *arq_out; arq_out = fopen("L2Q1.out", "a");
+    Node *node = root->root;
+    int alt_max = 0;
+
+    if(qtd_line != 0) fprintf(arq_out, "\n");
+
+    if(root != NULL)
+    {
+        alt_List *aux = alt->list;
+
+        while(aux != NULL){
+            fprintf(arq_out, "%d ", aux->key);
+            aux = aux->next;
+        }
+
+        node = get_max_plus_alt(node, &alt_max);
+
+        fprintf(arq_out, "max %d", node->key);
+        fprintf(arq_out, " alt %d", alt_max);
+
+        if(node->father != NULL)    fprintf(arq_out, " pred %d", node->father->key);
+        else fprintf(arq_out, " pred NaN");
+    }
+    else    fprintf(arq_out, " max alt pred NaN");
+    
+    fclose(arq_out);
+} 
+
 void clear_tree(Node *root) {
 
     if(root != NULL)
@@ -117,10 +210,17 @@ void clear_tree(Node *root) {
     }
 }
 
-void output_height(int height) {
-    FILE *arq_out; arq_out = fopen("L2Q1.out", "a");
+void clear_alt_list(head_Alt *alt) {
+    alt_List *atual = alt->list;
 
-    fprintf(arq_out, "%d ", height);
+    if(atual != NULL){
 
-    fclose(arq_out);
+        alt_List *ant;
+        while(atual != NULL){
+            ant = atual->next;
+
+            free(atual);
+            atual = ant;
+        }
+    }
 }
