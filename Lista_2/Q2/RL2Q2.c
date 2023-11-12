@@ -1,10 +1,6 @@
 /*
     gcc RL2Q2.c -o q2
 */
-/*
-    Fixar output
-*/
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,6 +9,7 @@
 #define MAX_LINE 600
 #define separador " "
 
+int maior_Atual_Tree;
 
 typedef struct tree{
     struct tree *father;
@@ -31,7 +28,7 @@ void clear_tree(Node_tree *node);
 Node_tree* create_node(int value);
 void transfer_2_file(Root_tree *root);
 // int get_soma_right(Node_tree *node);
-void transfer_sum_2_file(Node_tree *node);
+void transfer_sum_2_file(Node_tree *node, FILE *arq);
 void insert_node(Root_tree *root, Node_tree *new_node);
 
 int main(){
@@ -54,14 +51,13 @@ int main(){
         token = strtok(line, separador);
 
         init(__Root);
+        maior_Atual_Tree = 0;
         while(token != NULL)
         {
             insert_node(__Root, create_node(atoi(token)));
 
             token = strtok(NULL, separador);
         }
-        // int soma = get_soma(__Root->root->right) - get_soma(__Root->root->left);
-        // printf("%d\n", soma);
         transfer_2_file(__Root);
         clear_tree(__Root->root);
 
@@ -101,6 +97,7 @@ void insert_node(Root_tree *root, Node_tree *new_node) {
             return;
         }
     }
+    if(new_node->key > maior_Atual_Tree) maior_Atual_Tree = new_node->key;
 
     new_node->father = x;
 
@@ -136,33 +133,36 @@ int get_soma(Node_tree *node) {
 
     if(node != NULL){
         sum = node->key;
-        sum += get_soma(node->right);
         sum += get_soma(node->left);
+        sum += get_soma(node->right);
     }
 
     return sum;
 } 
 /*Hint - Usar a função recursiva de imprimir para pegar a soma do nós em cada lado*/
 
-void transfer_sum_2_file(Node_tree *node) {
-    FILE *arq_out; arq_out = fopen("L2Q2.out", "a");
+void transfer_sum_2_file(Node_tree *node, FILE *arq) {
 
     if(node != NULL){
-        transfer_sum_2_file(node->left);
+
+        transfer_sum_2_file(node->left, arq);
 
         int result = get_soma(node->right) - get_soma(node->left);
-        fprintf(arq_out, "%d (%d)", node->key, result);
+        fprintf(arq, "%d (%d)", node->key, result);
 
-        transfer_sum_2_file(node->right);
+        if(node->key != maior_Atual_Tree)
+            fprintf(arq, " ");
+
+        transfer_sum_2_file(node->right, arq);
+
     } 
 
-    fclose(arq_out);
 }
 
 void transfer_2_file(Root_tree *root) {
     FILE *arq_out; arq_out = fopen("L2Q2.out", "a");
 
-    transfer_sum_2_file(root->root);
+    transfer_sum_2_file(root->root, arq_out);
     fprintf(arq_out, "\n");
 
     fclose(arq_out);
