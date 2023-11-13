@@ -37,7 +37,7 @@ Node* get_max_plus_alt(Node *root, int *alt);
 void init(Root *root, head_Alt *height_list);
 void add_height_list(head_Alt *head, int alt);
 int insert_tree_get_height(Root *root, Node *node);
-void transfer_2_file(Root *root, int qtd_line, head_Alt *alt);
+void transfer_2_file(Root *root, FILE* __arq_in, head_Alt *alt);
 
 int main(){
     FILE *arq_in; arq_in = fopen("L2Q1.in", "r");
@@ -55,7 +55,7 @@ int main(){
 
     char *line = malloc(MAX_LINE * sizeof(char)); 
     char *token;
-    int qtd_line = 0, alt;
+    int alt;
 
     do{
         fgets(line, MAX_LINE, arq_in);
@@ -68,8 +68,7 @@ int main(){
             add_height_list(height_list, alt);
             token = strtok(NULL, separador);
         }
-        transfer_2_file(root, qtd_line, height_list);
-        qtd_line++;
+        transfer_2_file(root, arq_in, height_list);
 
         // show_in_order(root->root);
         clear_tree(root->root);
@@ -171,12 +170,10 @@ Node* get_max_plus_alt(Node *root, int *alt) {
     return root;
 }
 
-void transfer_2_file(Root *root, int qtd_line, head_Alt *alt) {
+void transfer_2_file(Root *root, FILE* __arq_in, head_Alt *alt) {
     FILE *arq_out; arq_out = fopen("L2Q1.out", "a");
     Node *node = root->root;
     int alt_max = 0;
-
-    if(qtd_line != 0) fprintf(arq_out, "\n");
 
     if(root != NULL)
     {
@@ -197,6 +194,8 @@ void transfer_2_file(Root *root, int qtd_line, head_Alt *alt) {
     }
     else    fprintf(arq_out, " max alt pred NaN");
     
+    if(!feof(__arq_in)) fprintf(arq_out, "\n");
+
     fclose(arq_out);
 } 
 
