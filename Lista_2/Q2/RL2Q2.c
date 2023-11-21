@@ -38,6 +38,8 @@ int main(){
 
         fclose(arq_in);
         fclose(arq_out);
+
+        return EXIT_FAILURE;
     }
 
     char *token;
