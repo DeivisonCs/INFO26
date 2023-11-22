@@ -31,6 +31,7 @@ typedef struct Root {
 void clear_tree(Node *root);
 Node* create_node(int value);
 void show_in_order(Node *root);
+Node* get_predecessor(Node *node);
 void clear_alt_list(head_Alt *alt);
 void get_height(int height, alt_List *head);
 Node* get_max_plus_alt(Node *root, int *alt);
@@ -73,7 +74,6 @@ int main(){
         // show_in_order(root->root);
         clear_tree(root->root);
         clear_alt_list(height_list);
-
     }while(!feof(arq_in));
 
     free(line);
@@ -159,6 +159,27 @@ void get_height(int height, alt_List *head) {
     aux->next = alt;    
 }
 
+Node* get_predecessor(Node *node) {
+    Node *pred = node;
+
+    if(pred->left != NULL){
+        pred = pred->left;
+
+        while(pred->right != NULL)
+            pred = pred->right;
+
+        return pred;
+    }
+
+    pred = node->father;
+    while(pred != NULL && node == pred->left){
+        node = pred;
+        pred = pred->father;
+    }
+
+    return pred;
+}
+
 Node* get_max_plus_alt(Node *root, int *alt) {
 
     if(root != NULL)
@@ -186,13 +207,16 @@ void transfer_2_file(Root *root, FILE* __arq_in, head_Alt *alt) {
 
         node = get_max_plus_alt(node, &alt_max);
 
-        fprintf(arq_out, "max %d", node->key);
-        fprintf(arq_out, " alt %d", alt_max);
+        fprintf(arq_out, "max %d ", node->key);
+        fprintf(arq_out, "alt %d ", alt_max);
 
-        if(node->father != NULL)    fprintf(arq_out, " pred %d", node->father->key);
-        else fprintf(arq_out, " pred NaN");
+        node = get_predecessor(node);
+
+        if(node == NULL)  fprintf(arq_out, "pred NaN");
+        else  fprintf(arq_out, "pred %d", node->key);
+
     }
-    else    fprintf(arq_out, " max alt pred NaN");
+    else fprintf(arq_out, " max alt pred NaN");
     
     if(!feof(__arq_in)) fprintf(arq_out, "\n");
 
