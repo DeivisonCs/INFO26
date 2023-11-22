@@ -121,18 +121,18 @@ void insert_node(Tree_Root *root, Tree_Node *new_node){
 
 Tree_Node* get_sucesor(Tree_Node *node){
 
-    Tree_Node *min = node;
+    Tree_Node *aux = node;
     
-    if(min->right != NULL){
-        min = min->right;
+    if(aux->right != NULL){
+        aux = aux->right;
 
-        while(min->left != NULL)
-            min = min->left;
+        while(aux->left != NULL)
+            aux = aux->left;
 
-        return min;
+        return aux;
     }
 
-    Tree_Node *aux = node->father;
+    aux = node->father;
     while(aux != NULL && aux == node->right){
         node = aux;
         aux = aux->father;
