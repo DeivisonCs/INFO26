@@ -25,8 +25,9 @@ int get_maior(Tree_Node *node);
 void tree_free(Tree_Node *node);
 void show_tree(Tree_Node *node);
 Tree_Node* create_node(int value);
-void transfer_2_file(Tree_Root *Root, FILE* arq_in);
 Tree_Node* get_sucesor(Tree_Node *node);
+void update_height(Tree_Node *node, int heigth);
+void transfer_2_file(Tree_Root *Root, FILE* arq_in);
 Tree_Node* search_node(Tree_Node *node, int value);
 void delete_element(Tree_Root *Root, int value);
 void insert_node(Tree_Root *root, Tree_Node *new_node);
@@ -65,6 +66,7 @@ int  main() {
                 
                 token = strtok(NULL, separador);
                 delete_element(_Root, atoi(token));
+                update_height(_Root->root , 0);
             }
             // show_tree(_Root->root);
             // printf("\n");
@@ -231,6 +233,16 @@ void show_tree(Tree_Node *node){
         show_tree(node->left);
         printf("%d (%d) ", node->key, node->height);
         show_tree(node->right);
+    }
+}
+
+void update_height(Tree_Node *node, int heigth){
+
+    if(node != NULL){
+        node->height = heigth;
+
+        update_height(node->left, heigth++);
+        update_height(node->right, heigth++);
     }
 }
 
