@@ -66,7 +66,7 @@ int  main() {
                 
                 token = strtok(NULL, separador);
                 delete_element(_Root, atoi(token));
-                update_height(_Root->root , 0);
+                update_height(_Root->root, 0);
             }
             // show_tree(_Root->root);
             // printf("\n");
@@ -240,9 +240,10 @@ void update_height(Tree_Node *node, int heigth){
 
     if(node != NULL){
         node->height = heigth;
+        heigth++;
 
-        update_height(node->left, heigth++);
-        update_height(node->right, heigth++);
+        update_height(node->left, heigth);
+        update_height(node->right, heigth);
     }
 }
 

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define MAX_LINE 600
 #define separador " "
@@ -28,11 +29,13 @@ typedef struct Root {
     Node *root;
 }Root;
 
+
 void clear_tree(Node *root);
 Node* create_node(int value);
 void show_in_order(Node *root);
 Node* get_predecessor(Node *node);
 void clear_alt_list(head_Alt *alt);
+bool confirm_tabela_ascii(char *token);
 void get_height(int height, alt_List *head);
 Node* get_max_plus_alt(Node *root, int *alt);
 void init(Root *root, head_Alt *height_list);
@@ -65,8 +68,11 @@ int main(){
         init(root, height_list);
         while(token != NULL)
         {   
-            alt = insert_tree_get_height(root, create_node(atoi(token)));
-            add_height_list(height_list, alt);
+            if(confirm_tabela_ascii(token) == true){
+                alt = insert_tree_get_height(root, create_node(atoi(token)));
+                add_height_list(height_list, alt);
+            }
+            
             token = strtok(NULL, separador);
         }
         transfer_2_file(root, arq_in, height_list);
@@ -246,4 +252,11 @@ void clear_alt_list(head_Alt *alt) {
             atual = ant;
         }
     }
+}
+
+bool confirm_tabela_ascii(char *token){
+    if((token[0] < 48 || token[0] > 57) && token[0] != '-')
+        return false;
+
+    return true;
 }
