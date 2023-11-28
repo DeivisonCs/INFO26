@@ -10,7 +10,7 @@ gcc RL0Q1.c -o RL0Q1 -lm
 #define Precisao 10
 #define LINE_MAX 600
 const char * separador = " ";
-
+ 
 typedef struct x_y{
    float xy[2];
 }coord;
